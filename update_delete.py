@@ -74,3 +74,46 @@ def update_student():
         print(f'  Database error: {e}')
     except Exception as e:
         print(f'  Unexpected error: {e}')
+
+def delete_student():
+    print('\n' + '='*50)
+    print('        DELETE A STUDENT RECORD')
+    print('='*50)
+    student_id = input('  Enter Student ID to delete: ').strip().upper()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM students WHERE student_id = ?', (student_id,))
+        student = cursor.fetchone()
+        if not student:
+            print(f'  Student {student_id} not found.')
+            conn.close()
+            return
+        print('\n  +-------------------------------------+')
+        print('  |         STUDENT TO DELETE           |')
+        print('  +-------------------------------------+')
+        print(f"  |  Name    : {student['full_name']:<26}|")
+        print(f"  |  ID      : {student['student_id']:<26}|")
+        print(f"  |  Program : {student['program']:<26}|")
+        print(f"  |  Status  : {student['enrollment_status']:<26}|")
+        print('  +-------------------------------------+')
+        confirm = input('\n  Are you sure you want to delete? (Y/N): ').strip().upper()
+        if confirm == 'Y':
+            # Delete in correct order to respect foreign keys
+            cursor.execute('DELETE FROM attendance WHERE student_id = ?',       (student_id,))
+            cursor.execute('DELETE FROM grades WHERE student_id = ?',            (student_id,))
+            cursor.execute('DELETE FROM enrollments WHERE student_id = ?',       (student_id,))
+            cursor.execute('DELETE FROM enrollment_history WHERE student_id = ?',(student_id,))
+            cursor.execute('DELETE FROM users WHERE username = ?',               (student_id,))
+            cursor.execute('DELETE FROM students WHERE student_id = ?',          (student_id,))
+            conn.commit()
+            print(f"\n  Record for {student['full_name']} deleted successfully.")
+        elif confirm == 'N':
+            print('  Deletion cancelled. Returning to menu.')
+        else:
+            print('  Invalid input. Deletion cancelled.')
+        conn.close()
+    except sqlite3.Error as e:
+        print(f'  Database error: {e}')
+    except Exception as e:
+        print(f'  Unexpected error: {e}')
