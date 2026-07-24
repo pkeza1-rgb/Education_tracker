@@ -26,3 +26,16 @@ def view_all_students():
         print(f'  Total Students: {len(rows)}')
     except Exception as e:
         print(f'  Error retrieving students: {e}')
+        def _print_profile(s):
+    print('\n  ' + '='*45)
+    print('          STUDENT PROFILE')
+    print('  ' + '='*45)
+    for label, key in [
+        ('Student ID','student_id'), ('Full Name','full_name'), ('Age','age'),
+        ('Gender','gender'), ('Date of Birth','date_of_birth'),
+        ('Nationality','nationality'), ('Phone','phone_number'),
+        ('Email','email'), ('Program','program'),
+        ('Year of Study','year_of_study'), ('Admission Date','admission_date'),
+        ('Status','enrollment_status')]:
+        print(f'  {label:<22}: {s[key]}')
+    print('  ' + '='*45)
