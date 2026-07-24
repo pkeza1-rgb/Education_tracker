@@ -54,3 +54,70 @@ def assign_course():
         print(f'  Database error: {e}')
     except Exception as e:
         print(f'  Unexpected error: {e}')
+
+        def record_grade():
+    print('\n' + '='*50)
+    print('        RECORD STUDENT GRADE')
+    print('='*50)
+    student_id = input('  Enter Student ID: ').strip().upper()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT full_name FROM students WHERE student_id = ?', (student_id,))
+        student = cursor.fetchone()
+        if not student:
+            print(f'  Student {student_id} not found.')
+            conn.close()
+            return
+
+        cursor.execute('''
+            SELECT c.course_code, c.course_name 
+            FROM enrollments e
+            JOIN courses c ON e.course_code = c.course_code
+            WHERE e.student_id = ?
+        ''', (student_id,))
+        enrolled = cursor.fetchall()
+
+        if not enrolled:
+            print(f'  Student {student_id} is not enrolled in any courses.')
+            conn.close()
+            return
+
+        print('\n  Enrolled Courses:')
+        for c in enrolled:
+            print(f"   [{c['course_code']}] {c['course_name']}")
+
+        course_code = input('\n  Enter Course Code to grade: ').strip().upper()
+        valid_codes = [c['course_code'] for c in enrolled]
+        if course_code not in valid_codes:
+            print('  Student is not enrolled in that course.')
+            conn.close()
+            return
+
+        grade_input = input('  Enter Grade (0 - 100): ').strip()
+        try:
+            grade = float(grade_input)
+            if not (0 <= grade <= 100):
+                print('  Grade must be between 0 and 100.')
+                conn.close()
+                return
+        except ValueError:
+            print('  Invalid grade input.')
+            conn.close()
+            return
+
+        cursor.execute('''
+            INSERT INTO grades (student_id, course_code, grade)
+            VALUES (?, ?, ?)
+            ON CONFLICT(student_id, course_code) 
+            DO UPDATE SET grade = excluded.grade
+        ''', (student_id, course_code, grade))
+
+        conn.commit()
+        conn.close()
+        print(f"\n  Grade {grade} recorded for {course_code} successfully!")
+
+    except sqlite3.Error as e:
+        print(f'  Database error: {e}')
+    except Exception as e:
+        print(f'  Unexpected error: {e}')
