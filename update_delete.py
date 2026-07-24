@@ -12,3 +12,65 @@ from database import get_connection
 def _prompt(label, current):
     val = input(f'  {label} [{current}]: ').strip()
     return val if val else current
+
+def update_student():
+    print('\n' + '='*50)
+    print('        UPDATE STUDENT INFORMATION')
+    print('='*50)
+    student_id = input('  Enter Student ID to update: ').strip().upper()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM students WHERE student_id = ?', (student_id,))
+        student = cursor.fetchone()
+        if not student:
+            print(f'  Student {student_id} not found.')
+            conn.close()
+            return
+        print(f"\n  Updating record for: {student['full_name']}")
+        print('  (Press Enter to keep the current value)\n')
+        full_name   = _prompt('Full Name',         student['full_name'])
+        age         = _prompt('Age',               str(student['age']))
+        gender      = _prompt('Gender',            student['gender'])
+        dob         = _prompt('Date of Birth',     student['date_of_birth'])
+        nationality = _prompt('Nationality',       student['nationality'])
+        phone       = _prompt('Phone Number',      student['phone_number'])
+        email       = _prompt('Email',             student['email'])
+        program     = _prompt('Program',           student['program'])
+        year        = _prompt('Year of Study',     str(student['year_of_study']))
+        adm_date    = _prompt('Admission Date',    student['admission_date'])
+        status      = _prompt('Enrollment Status', student['enrollment_status'])
+
+        if not age.isdigit() or not (18 <= int(age) <= 100):
+            print('  Invalid age. Update cancelled.')
+            conn.close()
+            return
+        if year not in ['1', '2', '3', '4']:
+            print('  Invalid year of study. Update cancelled.')
+            conn.close()
+            return
+
+        cursor.execute('''
+            UPDATE students SET
+                full_name=?, age=?, gender=?, date_of_birth=?,
+                nationality=?, phone_number=?, email=?, program=?,
+                year_of_study=?, admission_date=?, enrollment_status=?
+            WHERE student_id=?
+        ''', (full_name, int(age), gender, dob, nationality,
+              phone, email, program, int(year), adm_date, status,
+              student_id))
+
+        if status != student['enrollment_status']:
+            cursor.execute('''
+                INSERT INTO enrollment_history (student_id, status, changed_on)
+                VALUES (?,?,?)
+            ''', (student_id, status, datetime.now().strftime('%d/%m/%Y')))
+
+        conn.commit()
+        conn.close()
+        print(f'\n  Record for {student_id} updated successfully!')
+
+    except sqlite3.Error as e:
+        print(f'  Database error: {e}')
+    except Exception as e:
+        print(f'  Unexpected error: {e}')
