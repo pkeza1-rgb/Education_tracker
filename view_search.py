@@ -1,5 +1,10 @@
-
+# =============================================================
+# view_search.py — MEMBER 3 (Aldo Rudakemwa)
+# View all students, search by ID or name,
+# and student self-view (student sees only their own profile).
+# =============================================================
 from database import get_connection
+
 def view_all_students():
     print('\n' + '='*75)
     print('  ALL REGISTERED STUDENTS')
@@ -26,20 +31,8 @@ def view_all_students():
         print(f'  Total Students: {len(rows)}')
     except Exception as e:
         print(f'  Error retrieving students: {e}')
-        def _print_profile(s):
-    print('\n  ' + '='*45)
-    print('          STUDENT PROFILE')
-    print('  ' + '='*45)
-    for label, key in [
-        ('Student ID','student_id'), ('Full Name','full_name'), ('Age','age'),
-        ('Gender','gender'), ('Date of Birth','date_of_birth'),
-        ('Nationality','nationality'), ('Phone','phone_number'),
-        ('Email','email'), ('Program','program'),
-        ('Year of Study','year_of_study'), ('Admission Date','admission_date'),
-        ('Status','enrollment_status')]:
-        print(f'  {label:<22}: {s[key]}')
-    print('  ' + '='*45)
-    def search_student():
+
+def search_student():
     print('\n' + '='*50)
     print('        SEARCH FOR A STUDENT')
     print('='*50)
@@ -54,8 +47,8 @@ def view_all_students():
             cursor.execute('SELECT * FROM students WHERE student_id = ?', (sid,))
         elif choice == '2':
             name = input('  Enter Student Name: ').strip()
-            cursor.execute('SELECT * FROM students WHERE full_name LIKE ?',
-                           (f'%{name}%',))
+            cursor.execute(
+                'SELECT * FROM students WHERE full_name LIKE ?', (f'%{name}%',))
         else:
             print('  Invalid choice.')
             conn.close()
@@ -69,4 +62,38 @@ def view_all_students():
             _print_profile(s)
     except Exception as e:
         print(f'  Error during search: {e}')
-        
+
+def view_own_profile(student_id):
+    """Called when a student logs in — shows only their own record."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM students WHERE student_id = ?', (student_id,))
+        student = cursor.fetchone()
+        conn.close()
+        if not student:
+            print('  Profile not found.')
+            return
+        _print_profile(student)
+    except Exception as e:
+        print(f'  Error loading profile: {e}')
+
+def _print_profile(s):
+    print('\n  ' + '='*45)
+    print('          STUDENT PROFILE')
+    print('  ' + '='*45)
+    for label, key in [
+        ('Student ID',        'student_id'),
+        ('Full Name',         'full_name'),
+        ('Age',               'age'),
+        ('Gender',            'gender'),
+        ('Date of Birth',     'date_of_birth'),
+        ('Nationality',       'nationality'),
+        ('Phone',             'phone_number'),
+        ('Email',             'email'),
+        ('Program',           'program'),
+        ('Year of Study',     'year_of_study'),
+        ('Admission Date',    'admission_date'),
+        ('Status',            'enrollment_status')]:
+        print(f'  {label:<22}: {s[key]}')
+    print('  ' + '='*45)
