@@ -41,7 +41,7 @@ def initialize_database():
     ''')
     conn.commit()
     conn.close()
-    print('[DB] Database initialized successfully.')
+    print('Database initialized successfully.')
 
 if __name__ == '__main__':
     initialize_database()
