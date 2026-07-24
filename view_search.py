@@ -39,3 +39,34 @@ def view_all_students():
         ('Status','enrollment_status')]:
         print(f'  {label:<22}: {s[key]}')
     print('  ' + '='*45)
+    def search_student():
+    print('\n' + '='*50)
+    print('        SEARCH FOR A STUDENT')
+    print('='*50)
+    print('  1. Search by Student ID')
+    print('  2. Search by Student Name')
+    choice = input('\n  Enter your choice (1-2): ').strip()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        if choice == '1':
+            sid = input('  Enter Student ID: ').strip().upper()
+            cursor.execute('SELECT * FROM students WHERE student_id = ?', (sid,))
+        elif choice == '2':
+            name = input('  Enter Student Name: ').strip()
+            cursor.execute('SELECT * FROM students WHERE full_name LIKE ?',
+                           (f'%{name}%',))
+        else:
+            print('  Invalid choice.')
+            conn.close()
+            return
+        results = cursor.fetchall()
+        conn.close()
+        if not results:
+            print('  Student not found.')
+            return
+        for s in results:
+            _print_profile(s)
+    except Exception as e:
+        print(f'  Error during search: {e}')
+        
