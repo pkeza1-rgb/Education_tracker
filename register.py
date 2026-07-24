@@ -45,3 +45,11 @@ def get_input(prompt, validator, error_msg):
         if validator(value):
             return value
         print(f'  X {error_msg}')
+
+def generate_student_id():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM students')
+    count = cursor.fetchone()[0]
+    conn.close()
+    return f'S{str(count + 1).zfill(3)}'
