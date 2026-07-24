@@ -72,3 +72,60 @@ def mark_attendance():
         print(f'  Database error: {e}')
     except Exception as e:
         print(f'  Unexpected error: {e}')
+def view_attendance(student_id=None):
+    """Admin passes no argument. Student passes their own ID."""
+    print('\n' + '='*60)
+    print('        ATTENDANCE REPORT')
+    print('='*60)
+
+    if student_id is None:
+        student_id = input('  Enter Student ID: ').strip().upper()
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT full_name FROM students WHERE student_id = ?',
+                       (student_id,))
+        student = cursor.fetchone()
+        if not student:
+            print(f'  Student {student_id} not found.')
+            conn.close()
+            return
+
+        cursor.execute('''
+            SELECT c.course_name, a.date, a.status
+            FROM attendance a
+            JOIN courses c ON a.course_id = c.course_id
+            WHERE a.student_id = ?
+            ORDER BY a.date
+        ''', (student_id,))
+        rows = cursor.fetchall()
+        conn.close()
+
+        print(f"\n  Student: {student['full_name']}  ({student_id})")
+        if not rows:
+            print('  No attendance records found.')
+            return
+
+        print(f"  {'Course':<30} {'Date':<15} Status")
+        print('  ' + '-'*55)
+        present = 0
+        absent  = 0
+        late    = 0
+        for row in rows:
+            print(f"  {row['course_name']:<30} {row['date']:<15} {row['status']}")
+            if row['status'] == 'Present': present += 1
+            elif row['status'] == 'Absent': absent += 1
+            elif row['status'] == 'Late': late += 1
+
+        total = present + absent + late
+        rate  = (present / total * 100) if total > 0 else 0
+        print('  ' + '-'*55)
+        print(f'  Present : {present}  |  Absent: {absent}  |  Late: {late}')
+        print(f'  Attendance Rate: {rate:.1f}%')
+        if rate < 75:
+            print('  WARNING: Attendance below 75%. Student is at risk.')
+
+    except Exception as e:
+        print(f'  Error retrieving attendance: {e}')
