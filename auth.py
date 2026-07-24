@@ -1,5 +1,5 @@
 # =============================================================
-# auth.py — MEMBER 1 (Rebecca Isaboke)
+# auth.py — MEMBER 1 (Paradis Keza)
 # Login system. Returns the logged-in user and their role.
 # Called by main.py before showing any menu.
 # =============================================================
