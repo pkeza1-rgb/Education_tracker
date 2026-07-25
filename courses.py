@@ -23,29 +23,29 @@ def assign_course():
             conn.close()
             return
 
-        cursor.execute('SELECT course_code, course_name FROM courses')
+        cursor.execute('SELECT course_id, course_name FROM courses')
         courses = cursor.fetchall()
         print('\n  Available Courses:')
         for c in courses:
-            print(f"   [{c['course_code']}] {c['course_name']}")
+            print(f"   [{c['course_id']}] {c['course_name']}")
 
-        course_code = input('\n  Enter Course Code to assign: ').strip().upper()
-        cursor.execute('SELECT course_name FROM courses WHERE course_code = ?', (course_code,))
+        course_id = input('\n  Enter Course ID to assign: ').strip().upper()
+        cursor.execute('SELECT course_name FROM courses WHERE course_id = ?', (course_id,))
         course = cursor.fetchone()
         if not course:
-            print(f'  Course {course_code} not found.')
+            print(f'  Course {course_id} not found.')
             conn.close()
             return
 
-        cursor.execute('SELECT * FROM enrollments WHERE student_id = ? AND course_code = ?',
-                       (student_id, course_code))
+        cursor.execute('SELECT * FROM enrollments WHERE student_id = ? AND course_id = ?',
+                       (student_id, course_id))
         if cursor.fetchone():
             print(f"  Student is already enrolled in {course['course_name']}.")
             conn.close()
             return
 
-        cursor.execute('INSERT INTO enrollments (student_id, course_code) VALUES (?, ?)',
-                       (student_id, course_code))
+        cursor.execute('INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)',
+                       (student_id, course_id))
         conn.commit()
         conn.close()
         print(f"\n  Successfully assigned {course['course_name']} to {student['full_name']}!")
