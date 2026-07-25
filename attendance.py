@@ -1,5 +1,5 @@
 # =============================================================
-# attendance.py — MEMBER 5 (Paradis Ange Keza)
+# attendance.py — MEMBER 5 (Rudakemwa Aldo)
 # Mark attendance for a student in a course.
 # View attendance report for a student.
 # Students can view their own attendance.
