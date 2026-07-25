@@ -66,6 +66,17 @@ def initialize_database():
             FOREIGN KEY (course_id)  REFERENCES courses(course_id)
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS grades (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            course_id  TEXT NOT NULL,
+            grade      REAL NOT NULL,
+            grade_date TEXT NOT NULL,
+            FOREIGN KEY (student_id) REFERENCES students(student_id),
+            FOREIGN KEY (course_id)  REFERENCES courses(course_id)
+        )
+    ''')
     conn.commit()
     conn.close()
     print('Database initialized successfully.')
