@@ -91,12 +91,13 @@ def student_menu(username):
             view_own_profile(username)
         elif choice == '2':
             view_attendance(username)
+        elif choice == '3':
+            view_student_grades(username)
         elif choice == '0':
             print('\n  Logged out successfully.')
             break
         else:
-            print('  Invalid choice. Enter 1, 2, or 0.')
-
+            print('  Invalid choice. Enter 1, 2, 3, or 0.')
 # ── ENTRY POINT ───────────────────────────────────────────────
 def main():
     initialize_database()
