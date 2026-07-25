@@ -57,6 +57,15 @@ def initialize_database():
             credits     INTEGER NOT NULL
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS enrollments (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            course_id  TEXT NOT NULL,
+            FOREIGN KEY (student_id) REFERENCES students(student_id),
+            FOREIGN KEY (course_id)  REFERENCES courses(course_id)
+        )
+    ''')
     conn.commit()
     conn.close()
     print('Database initialized successfully.')
