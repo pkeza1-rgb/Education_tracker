@@ -1,5 +1,5 @@
 # =============================================================
-# view_search.py — MEMBER 3 (Aldo Rudakemwa)
+# view_search.py — MEMBER 3 (Kethia Keza)
 # View all students, search by ID or name,
 # and student self-view (student sees only their own profile).
 # =============================================================

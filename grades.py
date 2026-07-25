@@ -1,5 +1,5 @@
 # =============================================================
-# grades.py — MEMBER 5 (Paradis Ange Keza)
+# grades.py — MEMBER 5 (Rudakemwa Aldo)
 # Add a grade for a student in a course.
 # View all grades for a student.
 # Calculate and display GPA.
