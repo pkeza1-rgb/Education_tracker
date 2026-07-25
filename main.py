@@ -11,7 +11,7 @@ from register import register_student
 from view_search import view_all_students, search_student, view_own_profile
 from update_delete import update_student, delete_student
 from courses import add_course, view_all_courses, assign_course
-from grades import add_grade
+from grades import add_grade, view_student_grades
 from attendance import mark_attendance, view_attendance
 
 # ── ADMIN MENU ────────────────────────────────────────────────
@@ -36,6 +36,7 @@ def admin_menu():
         print('  9.  Add Grade for Student')
         print('  10. Mark Attendance')
         print('  11. View Attendance Report')
+        print('  12. View Student Grades and GPA')
         print('')
         print('  0.  Logout')
         print('=' * 50)
@@ -64,6 +65,8 @@ def admin_menu():
             mark_attendance()
         elif choice == '11':
             view_attendance()
+        elif choice == '12':
+            view_student_grades()
         elif choice == '0':
             print('\n  Logged out successfully.')
             break
@@ -78,6 +81,7 @@ def student_menu(username):
         print('=' * 50)
         print('  1. View My Profile')
         print('  2. View My Attendance Report')
+        print('  3. View My Grades and GPA')
         print('  0. Logout')
         print('=' * 50)
 
