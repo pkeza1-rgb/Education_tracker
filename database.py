@@ -2,9 +2,11 @@
 # database.py — MEMBER 1 (Paradis Keza)
 # DB setup, schema creation, connection function
 # =============================================================
+
 import sqlite3
 
 DB_NAME = "university.db"
+
 
 def get_connection():
     conn = sqlite3.connect(DB_NAME)
@@ -12,34 +14,40 @@ def get_connection():
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
+
 def initialize_database():
+
     conn = get_connection()
     cursor = conn.cursor()
+
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS students (
-        student_id        TEXT PRIMARY KEY,
-        full_name         TEXT NOT NULL,
-        age               INTEGER NOT NULL CHECK(age >= 18 AND age <= 100),
-        gender            TEXT NOT NULL,
-        date_of_birth     TEXT NOT NULL,
-        nationality       TEXT NOT NULL,
-        phone_number      TEXT NOT NULL,
-        email             TEXT NOT NULL UNIQUE,
-        program           TEXT NOT NULL,
-        year_of_study     INTEGER NOT NULL CHECK(year_of_study BETWEEN 1 AND 4),
-        admission_date    TEXT NOT NULL,
-        enrollment_status TEXT NOT NULL
-    )
-''')   
+        CREATE TABLE IF NOT EXISTS students (
+            student_id        TEXT PRIMARY KEY,
+            full_name         TEXT NOT NULL,
+            age               INTEGER NOT NULL CHECK(age >= 18 AND age <= 100),
+            gender            TEXT NOT NULL,
+            date_of_birth     TEXT NOT NULL,
+            nationality       TEXT NOT NULL,
+            phone_number      TEXT NOT NULL,
+            email             TEXT NOT NULL UNIQUE,
+            program           TEXT NOT NULL,
+            year_of_study     INTEGER NOT NULL CHECK(year_of_study BETWEEN 1 AND 4),
+            admission_date    TEXT NOT NULL,
+            enrollment_status TEXT NOT NULL
+        )
+    ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS enrollment_history (
             id         INTEGER PRIMARY KEY AUTOINCREMENT,
             student_id TEXT NOT NULL,
             status     TEXT NOT NULL,
             changed_on TEXT NOT NULL,
-            FOREIGN KEY (student_id) REFERENCES students(student_id)
+            FOREIGN KEY (student_id)
+                REFERENCES students(student_id)
         )
     ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
@@ -48,7 +56,6 @@ def initialize_database():
         )
     ''')
 
-    # courses — needed by courses.py, grades.py, attendance.py
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS courses (
             course_id   TEXT PRIMARY KEY,
@@ -57,50 +64,78 @@ def initialize_database():
             credits     INTEGER NOT NULL
         )
     ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS enrollments (
             id         INTEGER PRIMARY KEY AUTOINCREMENT,
             student_id TEXT NOT NULL,
             course_id  TEXT NOT NULL,
-            FOREIGN KEY (student_id) REFERENCES students(student_id),
-            FOREIGN KEY (course_id)  REFERENCES courses(course_id)
-        )
-    ''')
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS enrollments (
-            id         INTEGER PRIMARY KEY AUTOINCREMENT,
-            student_id TEXT NOT NULL,
-            course_id  TEXT NOT NULL,
+
             UNIQUE(student_id, course_id),
+
             FOREIGN KEY (student_id)
                 REFERENCES students(student_id)
                 ON DELETE CASCADE,
+
             FOREIGN KEY (course_id)
                 REFERENCES courses(course_id)
                 ON DELETE CASCADE
         )
     ''')
-       cursor.execute('''
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS grades (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            course_id  TEXT NOT NULL,
+            grade      REAL NOT NULL CHECK(grade >= 0 AND grade <= 100),
+            grade_date TEXT NOT NULL,
+
+            FOREIGN KEY (student_id)
+                REFERENCES students(student_id),
+
+            FOREIGN KEY (course_id)
+                REFERENCES courses(course_id)
+        )
+    ''')
+
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS attendance (
             id         INTEGER PRIMARY KEY AUTOINCREMENT,
             student_id TEXT NOT NULL,
             course_id  TEXT NOT NULL,
             date       TEXT NOT NULL,
-            status     TEXT NOT NULL,
-            FOREIGN KEY (student_id) REFERENCES students(student_id),
-            FOREIGN KEY (course_id)  REFERENCES courses(course_id)
+            status     TEXT NOT NULL
+                CHECK(status IN ('Present','Absent','Late')),
+
+            UNIQUE(student_id, course_id, date),
+
+            FOREIGN KEY (student_id)
+                REFERENCES students(student_id),
+
+            FOREIGN KEY (course_id)
+                REFERENCES courses(course_id)
         )
     ''')
-    cursor.execute("SELECT COUNT(*) FROM users WHERE role = 'admin'")
+
+
+    cursor.execute("SELECT COUNT(*) FROM users WHERE role='admin'")
+
     if cursor.fetchone()[0] == 0:
         cursor.execute(
-            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+            '''
+            INSERT INTO users (username, password, role)
+            VALUES (?, ?, ?)
+            ''',
             ('admin', 'admin123', 'admin')
         )
 
-       conn.commit()
-       conn.close()
-    print('Database initialized successfully.')
+
+    conn.commit()
+    conn.close()
+
+    print("Database initialized successfully.")
+
 
 if __name__ == '__main__':
     initialize_database()
