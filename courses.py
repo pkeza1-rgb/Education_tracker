@@ -55,3 +55,11 @@ def assign_course():
     except Exception as e:
         print(f'  Unexpected error: {e}')
         
+def generate_course_id():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM courses')
+    count = cursor.fetchone()[0]
+    conn.close()
+    return f'C{str(count + 1).zfill(3)}'
+        
