@@ -69,3 +69,26 @@ def admin_menu():
             break
         else:
             print('  Invalid choice. Enter a number from the menu.')
+
+# ── STUDENT MENU ──────────────────────────────────────────────
+def student_menu(username):
+    while True:
+        print('\n' + '=' * 50)
+        print('             STUDENT MENU')
+        print('=' * 50)
+        print('  1. View My Profile')
+        print('  2. View My Attendance Report')
+        print('  0. Logout')
+        print('=' * 50)
+
+        choice = input('  Enter your choice: ').strip()
+
+        if choice == '1':
+            view_own_profile(username)
+        elif choice == '2':
+            view_attendance(username)
+        elif choice == '0':
+            print('\n  Logged out successfully.')
+            break
+        else:
+            print('  Invalid choice. Enter 1, 2, or 0.')
