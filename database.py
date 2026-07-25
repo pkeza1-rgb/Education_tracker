@@ -40,6 +40,23 @@ def initialize_database():
             FOREIGN KEY (student_id) REFERENCES students(student_id)
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            password TEXT NOT NULL,
+            role     TEXT NOT NULL
+        )
+    ''')
+
+    # courses — needed by courses.py, grades.py, attendance.py
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS courses (
+            course_id   TEXT PRIMARY KEY,
+            course_name TEXT NOT NULL,
+            lecturer    TEXT NOT NULL,
+            credits     INTEGER NOT NULL
+        )
+    ''')
     conn.commit()
     conn.close()
     print('Database initialized successfully.')
