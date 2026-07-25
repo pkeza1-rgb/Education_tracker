@@ -102,3 +102,56 @@ def _to_gpa(grade):
     if grade >= 60: return 2.3
     if grade >= 50: return 1.0
     return 0.0
+def view_student_grades(student_id=None):
+    """Admin passes no argument. Student passes their own ID."""
+    print('\n' + '=' * 60)
+    print('        STUDENT GRADES')
+    print('=' * 60)
+
+    if student_id is None:
+        student_id = input('  Enter Student ID: ').strip().upper()
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT full_name FROM students WHERE student_id = ?',
+                        (student_id,))
+        student = cursor.fetchone()
+        if not student:
+            print(f'  Student {student_id} not found.')
+            conn.close()
+            return
+
+        cursor.execute('''
+            SELECT c.course_name, g.grade, g.grade_date
+            FROM grades g
+            JOIN courses c ON g.course_id = c.course_id
+            WHERE g.student_id = ?
+            ORDER BY g.grade_date
+        ''', (student_id,))
+        rows = cursor.fetchall()
+        conn.close()
+
+        print(f"\n  Student : {student['full_name']} ({student_id})")
+        if not rows:
+            print('  No grades recorded yet.')
+            return
+
+        print(f"  {'Course':<35} {'Grade':<8} {'Letter':<8} Date")
+        print('  ' + '-' * 60)
+        total = 0
+        for row in rows:
+            letter = _to_letter(row['grade'])
+            print(f"  {row['course_name']:<35} {row['grade']:<8.1f} {letter:<8} {row['grade_date']}")
+            total += row['grade']
+
+        avg = total / len(rows)
+        gpa = _to_gpa(avg)
+        print('  ' + '-' * 60)
+        print(f'  Average Score : {avg:.1f}')
+        print(f'  GPA           : {gpa:.2f} / 4.00')
+        print(f'  Grade         : {_to_letter(avg)}')
+
+    except Exception as e:
+        print(f'  Error retrieving grades: {e}')
