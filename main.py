@@ -92,3 +92,26 @@ def student_menu(username):
             break
         else:
             print('  Invalid choice. Enter 1, 2, or 0.')
+
+# ── ENTRY POINT ───────────────────────────────────────────────
+def main():
+    initialize_database()
+
+    while True:
+        user = login()
+        if user is None:
+            break
+
+        if user['role'] == 'admin':
+            admin_menu()
+        elif user['role'] == 'student':
+            student_menu(user['username'])
+
+        again = input('\n  Log in again? (Y/N): ').strip().upper()
+        if again != 'Y':
+            print('\n  Thank you for using the University Student Tracker. Goodbye!\n')
+            break
+
+
+if __name__ == '__main__':
+    main()
