@@ -88,6 +88,12 @@ def initialize_database():
             FOREIGN KEY (course_id)  REFERENCES courses(course_id)
         )
     ''')
+    cursor.execute("SELECT COUNT(*) FROM users WHERE role = 'admin'")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute(
+            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+            ('admin', 'admin123', 'admin')
+        )
     conn.commit()
     conn.close()
     print('Database initialized successfully.')
