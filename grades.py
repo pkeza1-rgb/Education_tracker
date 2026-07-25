@@ -83,3 +83,13 @@ def add_grade():
 
     except Exception as e:
         print(f'  Unexpected error: {e}')
+        
+def _to_letter(grade):
+    if grade >= 90: return 'A+'
+    if grade >= 80: return 'A'
+    if grade >= 75: return 'B+'
+    if grade >= 70: return 'B'
+    if grade >= 65: return 'C+'
+    if grade >= 60: return 'C'
+    if grade >= 50: return 'D'
+    return 'F'
