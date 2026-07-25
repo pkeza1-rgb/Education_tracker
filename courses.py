@@ -91,4 +91,28 @@ def add_course():
         print(f'  Database error: {e}')
     except Exception as e:
         print(f'  Unexpected error: {e}')
-        
+
+def view_all_courses():
+    print('\n' + '=' * 65)
+    print('  ALL COURSES')
+    print('=' * 65)
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM courses ORDER BY course_id')
+        rows = cursor.fetchall()
+        conn.close()
+
+        if not rows:
+            print('  No courses added yet.')
+            return
+
+        print(f"  {'ID':<8} {'Course Name':<30} {'Lecturer':<20} Credits")
+        print('  ' + '-' * 60)
+        for row in rows:
+            print(f"  {row['course_id']:<8} {row['course_name']:<30} "
+                  f"{row['lecturer']:<20} {row['credits']}")
+        print('  ' + '-' * 60)
+        print(f'  Total Courses: {len(rows)}')
+    except Exception as e:
+        print(f'  Error retrieving courses: {e}')
