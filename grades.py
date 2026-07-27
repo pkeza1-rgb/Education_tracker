@@ -86,7 +86,7 @@ def add_grade():
 
 def _to_letter(grade):
     if grade >= 90: return 'A+'
-    if grade >= 80: return 'A'
+    if grade >= 95: return 'A'
     if grade >= 75: return 'B+'
     if grade >= 70: return 'B'
     if grade >= 65: return 'C+'
@@ -95,7 +95,7 @@ def _to_letter(grade):
     return 'F'
 def _to_gpa(grade):
     if grade >= 90: return 4.0
-    if grade >= 80: return 3.7
+    if grade >= 95: return 3.7
     if grade >= 75: return 3.3
     if grade >= 70: return 3.0
     if grade >= 65: return 2.7
