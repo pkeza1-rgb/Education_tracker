@@ -1,5 +1,5 @@
 # =============================================================
-# register.py 
+# register.py — MEMBER 2 (Adukwu Oche)
 # Student registration with full input validation.
 # Also creates a student login account after registration.
 # =============================================================
